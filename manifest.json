@@ -1,0 +1,26 @@
+{
+	"author": "@racle",
+	"name": "Undisposition [Racle fork]",
+	"description": "Removes Content-Disposition: attachment HTTP header to allow view files instead of downloading them. Extension icon acts as toggle.",
+	"version": "0.0.3",
+	"manifest_version": 2,
+	"background": {
+		"scripts": ["undisposition_bg.js"],
+		"persistent": true
+    },
+    "icons": { 
+        "16": "icons/icon16.png",
+        "19": "icons/icon19.png",
+        "48": "icons/icon48.png",
+       "128": "icons/icon128.png"
+    },
+    "browser_action": {
+        "default_title": "Undisposition"
+      },
+	"permissions": [
+		"webRequest",
+		"webRequestBlocking",
+		"<all_urls>",
+        "storage"
+	]
+}
