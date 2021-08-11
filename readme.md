@@ -1,9 +1,11 @@
-# Installation
+# Undisposition [Racle fork]
+
+## Installation
 
 Chrome: <https://chrome.google.com/webstore/detail/undisposition-racle-fork/bbppejejjfancffmhncgkhjdaikdgagc>
 Firefox: <https://addons.mozilla.org/en-US/firefox/addon/undisposition-racle-fork/>
 
-# Description
+## Description
 
 Removes Content-Disposition: attachment HTTP header to allow view files instead of downloading them. Extension icon acts as toggle.
 
