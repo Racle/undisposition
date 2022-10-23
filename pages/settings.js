@@ -4,6 +4,9 @@ if (typeof browser === 'undefined') {
 
 function loadData() {
   browser.storage.local.get('blacklist', function (data) {
+    if (data.blacklist === undefined) {
+      data.blacklist = []
+    }
     document.getElementById('blacklist').value = data.blacklist?.join('\n')
   })
 }
