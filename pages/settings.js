@@ -1,13 +1,22 @@
+if (typeof browser === 'undefined') {
+  var browser = chrome
+}
+
 function loadData() {
-  chrome.storage.local.get('blacklist', function (data) {
-    document.getElementById('blacklist').value = data.blacklist.join('\n')
+  browser.storage.local.get('blacklist', function (data) {
+    document.getElementById('blacklist').value = data.blacklist?.join('\n')
   })
 }
 
 function _submitHandler() {
   let list = document.getElementById('blacklist').value.split('\n')
   list = list.map(e => trimHost(e))
-  chrome.storage.local.set({ blacklist: list })
+  browser.storage.local.set({ blacklist: list }, function () {
+    // update script rules
+    browser.runtime.sendMessage({}, function (response) {
+      console.log(response)
+    })
+  })
   loadData()
 }
 
