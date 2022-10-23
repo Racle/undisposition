@@ -24,3 +24,9 @@ Original description (from chrome extension):
 Remove Content-Disposition: attachment HTTP header.
 Sometimes you want to see files in Chrome inline, but Chrome started to download it.
 This is quite irritating. This extension relaxes this behavior.
+
+## Branches
+
+[master](https://github.com/Racle/undisposition/tree/master): Firefox support
+
+[release/chrome-manifest-v3](https://github.com/Racle/undisposition/tree/release/chrome-manifest-v3): Chrome with manifest V3 support
