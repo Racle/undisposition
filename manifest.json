@@ -17,5 +17,5 @@
   "browser_action": {
     "default_title": "Undisposition"
   },
-  "permissions": ["webRequest", "webRequestBlocking", "<all_urls>", "storage"]
+  "permissions": ["contextMenus", "webRequest", "webRequestBlocking", "<all_urls>", "storage"]
 }

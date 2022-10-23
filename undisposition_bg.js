@@ -1,8 +1,21 @@
 var active = true
 chrome.webRequest.onHeadersReceived.addListener(
-  function (details) {
+  async function (details) {
     // console.log('details', details)
     // console.log('filetype', details.url.substring(details.url.length - 3))
+
+    // check if blacklist contains host
+    const host = details.url.split('/')[2]
+    let blacklist = []
+    blacklist = (await localGetSync('blacklist')) || []
+    let found = false
+    blacklist.forEach(e => {
+      if (host.includes(e)) {
+        found = true
+      }
+    })
+    if (found) return
+
     var headers = details.responseHeaders
     if (active) {
       for (var i = 0; i < headers.length; i++) {
@@ -81,3 +94,26 @@ function ToggleActive() {
 
 loadOptions(updateUI)
 chrome.browserAction.onClicked.addListener(ToggleActive)
+
+async function localGetSync(key) {
+  return new Promise((resolve, reject) => {
+    try {
+      chrome.storage.local.get(key, function (value) {
+        resolve(value[key])
+      })
+    } catch (ex) {
+      reject(ex)
+    }
+  })
+}
+
+browser.contextMenus.create({
+  id: 'log-selection',
+  title: 'Settings',
+  contexts: ['browser_action'],
+  onclick: (info, tab) => {
+    chrome.tabs.create({
+      url: 'pages/settings.html',
+    })
+  },
+})

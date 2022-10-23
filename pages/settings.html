@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      html {
+        background: #262626;
+        color: #fff;
+      }
+      body {
+        width: 600px;
+        margin: 0 auto;
+      }
+      p {
+        font-size: 0.9em;
+      }
+      button,
+      textarea,
+      input {
+        background: #38383d;
+        color: #fff;
+        border-radius: 4px;
+        padding-left: 8px;
+        padding-right: 8px;
+        padding-top: 4px;
+        padding-bottom: 4px;
+      }
+      input,
+      textarea {
+        background: #38383d;
+        color: #fff;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>Blacklist</h2>
+    <p>Disables Undisposition in these domains. <br />One entry per line.</p>
+    <textarea id="blacklist" rows="10" cols="50"> </textarea>
+    <br />
+    <br />
+
+    <button id="submit">Save</button>
+    <br />
+    <br />
+    <hr />
+    <h2>Blacklist tester</h2>
+    <input type="text" id="test" /> <button id="testButton">Test</button>
+
+    <div id="testResult"></div>
+
+    <script src="settings.js"></script>
+  </body>
+</html>
