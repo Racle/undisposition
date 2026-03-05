@@ -4,17 +4,30 @@ chrome.webRequest.onHeadersReceived.addListener(
     // console.log('details', details)
     // console.log('filetype', details.url.substring(details.url.length - 3))
 
-    // check if blacklist contains host
+    // check if host is allowed/blocked based on list mode
     const host = details.url.split('/')[2]
-    let blacklist = []
-    blacklist = (await localGetSync('blacklist')) || []
-    let found = false
-    blacklist.forEach(e => {
-      if (host.includes(e)) {
-        found = true
-      }
-    })
-    if (found) return
+    const listMode = (await localGetSync('listMode')) || 'blocklist'
+
+    if (listMode === 'blocklist') {
+      let blacklist = (await localGetSync('blacklist')) || []
+      let found = false
+      blacklist.forEach(e => {
+        if (host.includes(e)) {
+          found = true
+        }
+      })
+      if (found) return
+    } else {
+      // allowlist mode: only act on listed domains
+      let allowlist = (await localGetSync('allowlist')) || []
+      let found = false
+      allowlist.forEach(e => {
+        if (host.includes(e)) {
+          found = true
+        }
+      })
+      if (!found) return
+    }
 
     var headers = details.responseHeaders
     if (active) {
@@ -106,7 +119,7 @@ chrome.webRequest.onHeadersReceived.addListener(
 )
 
 function loadOptions(callback) {
-  chrome.storage.local.get(['activeStatus', 'blacklist'], function (data) {
+  chrome.storage.local.get(['activeStatus', 'blacklist', 'listMode', 'allowlist'], function (data) {
     if (data.activeStatus === undefined) {
       //at first install
       data.activeStatus = true
@@ -117,6 +130,13 @@ function loadOptions(callback) {
         })
       }
       saveOptions()
+    }
+    // Ensure listMode defaults to blocklist for existing users
+    if (!data.listMode) {
+      chrome.storage.local.set({ listMode: 'blocklist' })
+    }
+    if (!data.allowlist) {
+      chrome.storage.local.set({ allowlist: [] })
     }
     active = data.activeStatus
     if (callback != null) callback()
