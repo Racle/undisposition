@@ -1,5 +1,7 @@
 EXTENSION_NAME = undisposition
 VERSION = $(shell python3 -c "import json; print(json.load(open('manifest.json'))['version'])")
+MANIFEST_VERSION = $(shell python3 -c "import json; print(json.load(open('manifest.json'))['manifest_version'])")
+BROWSER = $(if $(filter 3,$(MANIFEST_VERSION)),chrome,firefox)
 
 # Files to include in the extension zip
 EXTENSION_FILES = \
@@ -14,11 +16,11 @@ EXTENSION_FILES = \
 
 .PHONY: zip clean test
 
-## Build Firefox extension zip
+## Build extension zip (auto-detects Firefox MV2 / Chrome MV3)
 zip: clean
-	@echo "Building $(EXTENSION_NAME)-$(VERSION).zip"
-	@zip -r $(EXTENSION_NAME)-$(VERSION).zip $(EXTENSION_FILES)
-	@echo "Done: $(EXTENSION_NAME)-$(VERSION).zip"
+	@echo "Building $(EXTENSION_NAME)-$(BROWSER)-$(VERSION).zip"
+	@zip -r $(EXTENSION_NAME)-$(BROWSER)-$(VERSION).zip $(EXTENSION_FILES)
+	@echo "Done: $(EXTENSION_NAME)-$(BROWSER)-$(VERSION).zip"
 
 ## Start local test server (usage: make test [PORT=8888])
 test:
