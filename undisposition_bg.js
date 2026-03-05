@@ -28,7 +28,8 @@ chrome.webRequest.onHeadersReceived.addListener(
       }
       for (var j = 0; j < headers.length; j++) {
         if (headers[j].name.toLowerCase() == 'content-type') {
-          if (headers[j].value == 'application/octet-stream' || headers[j].value == 'application/x-download') {
+          var ctValue = headers[j].value.split(';')[0].trim()
+          if (ctValue == 'application/octet-stream' || ctValue == 'application/x-download') {
             // get filetype from url,
             var ft = details.url ? details.url.substring(details.url.length - 5).toLowerCase() : ''
             ft = ft.split('.').pop()
@@ -36,7 +37,7 @@ chrome.webRequest.onHeadersReceived.addListener(
             //skip and fix popular filetypes
             var skip = ['exe', 'dmg', 'deb', 'rpm', 'apk', 'zip', 'rar', '7z', 'gz', 'xz']
             var fixApplication = ['pdf', 'json', 'xml', 'ogg']
-            var fixImage = ['gif', 'jpg', 'jpeg', 'png', 'tiff']
+            var fixImage = ['gif', 'jpg', 'jpeg', 'png', 'tiff', 'webp', 'avif', 'apng']
 
             // if exe/dmg/deb etc., keep original header
             // if pdf/jpeg/jpg/png etc., view file normally
@@ -46,9 +47,13 @@ chrome.webRequest.onHeadersReceived.addListener(
               headers[j].value = 'application/' + ft
             } else if (fixImage.includes(ft)) {
               headers[j].value = 'image/' + ft
+            } else if (ft === 'svg') {
+              headers[j].value = 'image/svg+xml'
             } else {
               headers[j].value = 'text/plain' //I hope Chrome is wise enough
             }
+          } else if (ctValue == 'text/csv') {
+            headers[j].value = 'text/plain'
           }
           break
         }
@@ -64,10 +69,16 @@ chrome.webRequest.onHeadersReceived.addListener(
 )
 
 function loadOptions(callback) {
-  chrome.storage.local.get('activeStatus', function (data) {
+  chrome.storage.local.get(['activeStatus', 'blacklist'], function (data) {
     if (data.activeStatus === undefined) {
       //at first install
       data.activeStatus = true
+      // Seed default blacklist on first install
+      if (!data.blacklist || data.blacklist.length === 0) {
+        chrome.storage.local.set({
+          blacklist: ['googleusercontent.com'],
+        })
+      }
       saveOptions()
     }
     active = data.activeStatus
