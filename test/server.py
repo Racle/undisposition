@@ -136,18 +136,40 @@ INDEX_HTML = b'''<!DOCTYPE html>
   </table>
 
   <h2>Binary Downloads</h2>
-  <p>Files that should always download, even with the extension enabled.</p>
+  <p>Files with binary Content-Types. The extension should preserve Content-Disposition
+     so the browser keeps the server-provided filename.</p>
   <table>
     <tr><th>Link</th><th>Server Headers</th><th>Expected (ext ON)</th></tr>
     <tr>
       <td><a href="/test.zip">/test.zip</a></td>
       <td><code>Content-Type: application/zip</code>, <code>Content-Disposition: attachment; filename=Example.zip</code></td>
-      <td>Downloads as <b>Example.zip</b></td>
+      <td>Downloads as <b>Example.zip</b> (not test.zip)</td>
+    </tr>
+    <tr>
+      <td><a href="/test.rar">/test.rar</a></td>
+      <td><code>Content-Type: application/x-rar-compressed</code>, <code>Content-Disposition: attachment; filename=Archive.rar</code></td>
+      <td>Downloads as <b>Archive.rar</b></td>
     </tr>
     <tr>
       <td><a href="/test.exe">/test.exe</a></td>
       <td><code>Content-Type: application/octet-stream</code>, <code>Content-Disposition: attachment; filename=Setup.exe</code></td>
       <td>Downloads as <b>Setup.exe</b></td>
+    </tr>
+  </table>
+
+  <h2>URL Edge Cases</h2>
+  <p>URLs with query strings, paths without extensions, etc.</p>
+  <table>
+    <tr><th>Link</th><th>Server Headers</th><th>Expected (ext ON)</th></tr>
+    <tr>
+      <td><a href="/download/report.pdf?token=abc&amp;v=2">/download/report.pdf?token=abc&amp;v=2</a></td>
+      <td><code>Content-Type: application/octet-stream</code>, <code>Content-Disposition: attachment</code></td>
+      <td>Displays as PDF (query string should not confuse extension)</td>
+    </tr>
+    <tr>
+      <td><a href="/download/data">/download/data</a></td>
+      <td><code>Content-Type: application/octet-stream</code>, <code>Content-Disposition: attachment</code></td>
+      <td>Displays as plain text (no extension fallback)</td>
     </tr>
   </table>
 
@@ -211,6 +233,20 @@ ROUTES = {
     '/test.exe': (b'\x00' * 16, {
         'Content-Type': 'application/octet-stream',
         'Content-Disposition': 'attachment; filename=Setup.exe',
+    }),
+    '/test.rar': (b'\x52\x61\x72\x21' + b'\x00' * 12, {
+        'Content-Type': 'application/x-rar-compressed',
+        'Content-Disposition': 'attachment; filename=Archive.rar',
+    }),
+
+    # URL edge cases
+    '/download/report.pdf': (PDF_CONTENT, {
+        'Content-Type': 'application/octet-stream',
+        'Content-Disposition': 'attachment; filename=report.pdf',
+    }),
+    '/download/data': (b'some plain text data\n', {
+        'Content-Type': 'application/octet-stream',
+        'Content-Disposition': 'attachment; filename=data',
     }),
 }
 
