@@ -7,27 +7,28 @@ chrome.webRequest.onHeadersReceived.addListener(
     // check if host is allowed/blocked based on list mode
     const host = details.url.split('/')[2]
     const listMode = (await localGetSync('listMode')) || 'blocklist'
+    var skipped = false
 
     if (listMode === 'blocklist') {
       let blacklist = (await localGetSync('blacklist')) || []
-      let found = false
       blacklist.forEach(e => {
         if (host.includes(e)) {
-          found = true
+          skipped = true
         }
       })
-      if (found) return
     } else {
       // allowlist mode: only act on listed domains
       let allowlist = (await localGetSync('allowlist')) || []
-      let found = false
+      var allowed = false
       allowlist.forEach(e => {
         if (host.includes(e)) {
-          found = true
+          allowed = true
         }
       })
-      if (!found) return
+      if (!allowed) skipped = true
     }
+
+    if (skipped) return
 
     var headers = details.responseHeaders
     if (active) {
@@ -148,13 +149,118 @@ function saveOptions() {
 }
 
 function updateUI() {
+  // Set global defaults (used for tabs without per-tab overrides)
   var str = active ? 'Undisposition active, click to deactivate' : 'Undisposition disabled, click to activate'
   chrome.browserAction.setTitle({ title: str })
-  chrome.browserAction.setBadgeText({ text: active ? '⠀' : '⠀' })
-  chrome.browserAction.setBadgeBackgroundColor({ color: active ? '#5084ee' : '#e91e63' })
+  chrome.browserAction.setBadgeText({ text: active ? '' : '⠀' })
+  if (!active) {
+    chrome.browserAction.setBadgeBackgroundColor({ color: '#e91e63' })
+  }
+
+  // Refresh all visible tabs so per-tab badges/titles update immediately
+  chrome.tabs.query({}, function (tabs) {
+    tabs.forEach(function (tab) {
+      updateTabBadge(tab.id, tab.url)
+    })
+  })
 }
 
-function ToggleActive() {
+async function updateTabBadge(tabId, url) {
+  if (!active) {
+    // Globally disabled: pink badge, click to activate
+    chrome.browserAction.setTitle({ tabId: tabId, title: 'Undisposition disabled, click to activate' })
+    chrome.browserAction.setBadgeText({ tabId: tabId, text: '⠀' })
+    chrome.browserAction.setBadgeBackgroundColor({ tabId: tabId, color: '#e91e63' })
+    return
+  }
+
+  // Internal pages (about:, moz-extension:, chrome:, etc.) — no badge, no toggle
+  if (!url || !url.startsWith('http')) {
+    chrome.browserAction.setTitle({ tabId: tabId, title: 'Undisposition' })
+    chrome.browserAction.setBadgeText({ tabId: tabId, text: '' })
+    return
+  }
+
+  var host
+  try {
+    host = new URL(url).hostname
+  } catch (e) {
+    chrome.browserAction.setTitle({ tabId: tabId, title: 'Undisposition' })
+    chrome.browserAction.setBadgeText({ tabId: tabId, text: '' })
+    return
+  }
+
+  var skipped = false
+  var listMode = (await localGetSync('listMode')) || 'blocklist'
+
+  if (listMode === 'blocklist') {
+    var blacklist = (await localGetSync('blacklist')) || []
+    blacklist.forEach(function (e) {
+      if (host.includes(e)) {
+        skipped = true
+      }
+    })
+  } else {
+    var allowlist = (await localGetSync('allowlist')) || []
+    var allowed = false
+    allowlist.forEach(function (e) {
+      if (host.includes(e)) {
+        allowed = true
+      }
+    })
+    if (!allowed) skipped = true
+  }
+
+  if (skipped) {
+    // Skipped domain: gray badge, no toggle
+    var reason = listMode === 'blocklist' ? 'Undisposition skipped (domain is blocklisted)' : 'Undisposition skipped (domain not in allowlist)'
+    chrome.browserAction.setTitle({ tabId: tabId, title: reason })
+    chrome.browserAction.setBadgeText({ tabId: tabId, text: '⠀' })
+    chrome.browserAction.setBadgeBackgroundColor({ tabId: tabId, color: '#555555' })
+  } else {
+    // Active domain: blue badge, click to deactivate
+    chrome.browserAction.setTitle({ tabId: tabId, title: 'Undisposition active, click to deactivate' })
+    chrome.browserAction.setBadgeText({ tabId: tabId, text: '⠀' })
+    chrome.browserAction.setBadgeBackgroundColor({ tabId: tabId, color: '#5084ee' })
+  }
+}
+
+function refreshActiveTabBadge() {
+  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    if (tabs && tabs[0]) {
+      updateTabBadge(tabs[0].id, tabs[0].url)
+    }
+  })
+}
+
+// Update badge when navigating within a tab
+chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
+  if (changeInfo.url || changeInfo.status === 'complete') {
+    updateTabBadge(tabId, tab.url)
+  }
+})
+
+// Update badge when switching tabs
+chrome.tabs.onActivated.addListener(function (activeInfo) {
+  chrome.tabs.get(activeInfo.tabId, function (tab) {
+    if (tab) {
+      updateTabBadge(tab.id, tab.url)
+    }
+  })
+})
+
+// Refresh badges when settings change
+chrome.storage.onChanged.addListener(function (changes, area) {
+  if (area === 'local' && (changes.blacklist || changes.allowlist || changes.listMode)) {
+    refreshActiveTabBadge()
+  }
+})
+
+function ToggleActive(tab) {
+  // Only allow toggle on active (blue) or disabled (pink) states
+  // Ignore clicks on non-HTTP tabs (about:, moz-extension:, etc.)
+  if (!tab.url || !tab.url.startsWith('http')) return
+
   active = !active
   saveOptions()
   updateUI()
