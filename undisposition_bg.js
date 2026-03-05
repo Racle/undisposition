@@ -18,21 +18,58 @@ chrome.webRequest.onHeadersReceived.addListener(
 
     var headers = details.responseHeaders
     if (active) {
-      for (var i = 0; i < headers.length; i++) {
-        if (headers[i].name.toLowerCase() == 'content-disposition') {
-          if (headers[i].value.indexOf('attachment') == 0) {
-            headers.splice(i, 1)
-          }
+      // Collect Content-Type first to make smart decisions
+      var contentType = ''
+      for (var k = 0; k < headers.length; k++) {
+        if (headers[k].name.toLowerCase() == 'content-type') {
+          contentType = headers[k].value.split(';')[0].trim().toLowerCase()
           break
         }
       }
+
+      // Binary types where Content-Disposition should be preserved
+      // (removing it would lose the server-provided filename)
+      var binaryTypes = [
+        'application/zip',
+        'application/x-rar-compressed',
+        'application/x-7z-compressed',
+        'application/gzip',
+        'application/x-xz',
+        'application/x-debian-package',
+        'application/x-rpm',
+        'application/vnd.android.package-archive',
+        'application/x-apple-diskimage',
+        'application/x-msdownload',
+        'application/x-msi',
+        'application/x-tar',
+        'application/x-bzip2',
+        'application/x-iso9660-image',
+      ]
+
+      // Only remove Content-Disposition if Content-Type is not a known binary type
+      if (!binaryTypes.includes(contentType)) {
+        for (var i = 0; i < headers.length; i++) {
+          if (headers[i].name.toLowerCase() == 'content-disposition') {
+            if (headers[i].value.indexOf('attachment') == 0) {
+              headers.splice(i, 1)
+            }
+            break
+          }
+        }
+      }
+
       for (var j = 0; j < headers.length; j++) {
         if (headers[j].name.toLowerCase() == 'content-type') {
           var ctValue = headers[j].value.split(';')[0].trim()
           if (ctValue == 'application/octet-stream' || ctValue == 'application/x-download') {
-            // get filetype from url,
-            var ft = details.url ? details.url.substring(details.url.length - 5).toLowerCase() : ''
-            ft = ft.split('.').pop()
+            // get filetype from url (use URL parser to handle query strings)
+            var ft = ''
+            try {
+              var urlPath = new URL(details.url).pathname
+              ft = urlPath.split('.').pop().toLowerCase()
+            } catch (e) {
+              ft = ''
+            }
             //
             //skip and fix popular filetypes
             var skip = ['exe', 'dmg', 'deb', 'rpm', 'apk', 'zip', 'rar', '7z', 'gz', 'xz']
