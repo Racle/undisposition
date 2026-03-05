@@ -32,6 +32,15 @@ function loadData() {
   })
 }
 
+function showToast() {
+  var toast = document.getElementById('saveToast')
+  toast.classList.add('visible')
+  clearTimeout(showToast._timer)
+  showToast._timer = setTimeout(function () {
+    toast.classList.remove('visible')
+  }, 2000)
+}
+
 function _submitHandler() {
   var mode = getSelectedMode()
 
@@ -43,12 +52,17 @@ function _submitHandler() {
   allowlist = allowlist.map(e => trimHost(e))
   allowlist = allowlist.filter(e => e)
 
-  browser.storage.local.set({
-    blacklist: blacklist,
-    allowlist: allowlist,
-    listMode: mode,
-  })
-  loadData()
+  browser.storage.local.set(
+    {
+      blacklist: blacklist,
+      allowlist: allowlist,
+      listMode: mode,
+    },
+    function () {
+      showToast()
+      loadData()
+    }
+  )
 }
 
 function _testHandler() {
@@ -59,9 +73,10 @@ function _testHandler() {
   } else {
     list = document.getElementById('allowlist').value.split('\n')
   }
-  list = list.map(e => e.trim())
+  list = list.map(e => e.trim()).filter(e => e)
 
   let host = trimHost(document.getElementById('test').value)
+  if (!host) return
   host = 'http://' + host
 
   let results = []
@@ -72,17 +87,30 @@ function _testHandler() {
     }
   })
 
+  var resultEl = document.getElementById('testResult')
+  resultEl.classList.add('visible')
+  resultEl.classList.remove('blocked', 'active-on')
+
   if (mode === 'blocklist') {
     if (results.length > 0) {
-      document.getElementById('testResult').innerHTML = '<br/>Blocked - matches:<br/><br/>' + results.join('<br />\n')
+      resultEl.classList.add('blocked')
+      resultEl.innerHTML =
+        '<strong>Blocked</strong> — extension disabled on this domain<br>Matches: ' +
+        results.join(', ')
     } else {
-      document.getElementById('testResult').innerHTML = '<br/>Not blocked - Undisposition will be active on this domain'
+      resultEl.classList.add('active-on')
+      resultEl.innerHTML = '<strong>Not blocked</strong> — extension will be active on this domain'
     }
   } else {
     if (results.length > 0) {
-      document.getElementById('testResult').innerHTML = '<br/>Allowed - matches:<br/><br/>' + results.join('<br />\n')
+      resultEl.classList.add('active-on')
+      resultEl.innerHTML =
+        '<strong>Allowed</strong> — extension will be active on this domain<br>Matches: ' +
+        results.join(', ')
     } else {
-      document.getElementById('testResult').innerHTML = '<br/>Not allowed - Undisposition will NOT be active on this domain'
+      resultEl.classList.add('blocked')
+      resultEl.innerHTML =
+        '<strong>Not allowed</strong> — extension will NOT be active on this domain'
     }
   }
 }
@@ -103,6 +131,11 @@ document.addEventListener('DOMContentLoaded', function () {
   var radios = document.querySelectorAll('input[name="listMode"]')
   radios.forEach(function (radio) {
     radio.addEventListener('change', updateVisibleSection)
+  })
+
+  // Allow testing by pressing Enter in the input
+  document.getElementById('test').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') _testHandler()
   })
 
   loadData()
