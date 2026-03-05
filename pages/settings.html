@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 
 <html lang="en">
   <head>
@@ -33,22 +33,58 @@
         background: #38383d;
         color: #fff;
       }
+      .mode-toggle {
+        margin-bottom: 16px;
+      }
+      .mode-toggle label {
+        margin-right: 16px;
+        cursor: pointer;
+      }
+      .mode-toggle input[type='radio'] {
+        margin-right: 4px;
+        cursor: pointer;
+      }
+      .list-section {
+        display: none;
+      }
+      .list-section.active {
+        display: block;
+      }
     </style>
   </head>
 
   <body>
-    <h2>Blacklist</h2>
-    <p>Disables Undisposition in these domains. <br />One entry per line.</p>
-    <textarea id="blacklist" rows="10" cols="50"> </textarea>
-    <br />
-    <br />
+    <h2>List mode</h2>
+    <div class="mode-toggle">
+      <label>
+        <input type="radio" name="listMode" value="blocklist" checked />
+        Blocklist
+      </label>
+      <label>
+        <input type="radio" name="listMode" value="allowlist" />
+        Allowlist
+      </label>
+    </div>
 
+    <div id="blocklist-section" class="list-section active">
+      <h3>Blocklist</h3>
+      <p>Disables Undisposition on these domains. <br />One entry per line.</p>
+      <textarea id="blacklist" rows="10" cols="50"> </textarea>
+    </div>
+
+    <div id="allowlist-section" class="list-section">
+      <h3>Allowlist</h3>
+      <p>Enables Undisposition <strong>only</strong> on these domains. <br />One entry per line.</p>
+      <textarea id="allowlist" rows="10" cols="50"> </textarea>
+    </div>
+
+    <br />
     <button id="submit">Save</button>
     <br />
     <br />
     <hr />
-    <h2>Blacklist tester</h2>
-    <p>Enter a URL to test if it is blacklisted.</p>
+    <h2>Domain tester</h2>
+    <p>Enter a URL to test if it matches the current list.</p>
     <input type="text" id="test" /> <button id="testButton">Test</button>
 
     <div id="testResult"></div>
