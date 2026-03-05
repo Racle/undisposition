@@ -17,5 +17,9 @@
   "browser_action": {
     "default_title": "Undisposition"
   },
+  "options_ui": {
+    "page": "pages/settings.html",
+    "open_in_tab": true
+  },
   "permissions": ["contextMenus", "webRequest", "webRequestBlocking", "<all_urls>", "storage"]
 }
