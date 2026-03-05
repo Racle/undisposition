@@ -35,6 +35,9 @@ This is quite irritating. This extension relaxes this behavior.
 
 ### Version 0.0.7
 
+New permission required:
+The "tabs" permission is used to access tab URLs in order to display per-tab badge indicators showing whether the extension is active or disabled on the current domain.
+
 - Added allowlist mode as alternative to blocklist (Fixes #10, #2)
 - Added per-tab badge indicator: blue (active), gray (skipped), pink (disabled) (Fixes #5)
 - Smart Content-Disposition handling: preserves header for binary types like zip, rar, exe (Fixes #6)
