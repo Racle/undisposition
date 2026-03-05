@@ -17,6 +17,6 @@
   "action": {
     "default_title": "Undisposition"
   },
-  "permissions": ["contextMenus", "declarativeNetRequest", "storage"],
-  "host_permissions": ["http://*/", "https://*/"]
+  "permissions": ["contextMenus", "tabs", "declarativeNetRequest", "storage"],
+  "host_permissions": ["http://*/", "https://*/", "http://localhost/*"]
 }
