@@ -94,24 +94,31 @@ function _testHandler() {
   if (mode === 'blocklist') {
     if (results.length > 0) {
       resultEl.classList.add('blocked')
-      resultEl.innerHTML =
-        '<strong>Blocked</strong> — extension disabled on this domain<br>Matches: ' +
-        results.join(', ')
+      setResultContent(resultEl, 'Blocked', ' — extension disabled on this domain', results)
     } else {
       resultEl.classList.add('active-on')
-      resultEl.innerHTML = '<strong>Not blocked</strong> — extension will be active on this domain'
+      setResultContent(resultEl, 'Not blocked', ' — extension will be active on this domain')
     }
   } else {
     if (results.length > 0) {
       resultEl.classList.add('active-on')
-      resultEl.innerHTML =
-        '<strong>Allowed</strong> — extension will be active on this domain<br>Matches: ' +
-        results.join(', ')
+      setResultContent(resultEl, 'Allowed', ' — extension will be active on this domain', results)
     } else {
       resultEl.classList.add('blocked')
-      resultEl.innerHTML =
-        '<strong>Not allowed</strong> — extension will NOT be active on this domain'
+      setResultContent(resultEl, 'Not allowed', ' — extension will NOT be active on this domain')
     }
+  }
+}
+
+function setResultContent(el, title, description, matches) {
+  el.textContent = ''
+  var strong = document.createElement('strong')
+  strong.textContent = title
+  el.appendChild(strong)
+  el.appendChild(document.createTextNode(description))
+  if (matches && matches.length > 0) {
+    el.appendChild(document.createElement('br'))
+    el.appendChild(document.createTextNode('Matches: ' + matches.join(', ')))
   }
 }
 

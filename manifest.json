@@ -4,6 +4,14 @@
   "description": "Removes Content-Disposition: attachment HTTP header to allow view files instead of downloading them. Extension icon acts as toggle.",
   "version": "0.0.7",
   "manifest_version": 2,
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{39919541-b8e1-4e50-a249-043d2326ef5e}",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  },
   "background": {
     "scripts": ["undisposition_bg.js"],
     "persistent": true
