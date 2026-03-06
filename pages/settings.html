@@ -7,6 +7,19 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
+      :root {
+        --bg-inset: #0f1629;
+        --border: #2a2a4a;
+        --accent: #5084ee;
+        --accent-hover: #6094ff;
+        --label: #b0b0cc;
+        --link: #8ab4f8;
+        --green: #4caf50;
+        --warn: #ffb74d;
+        --pink: #e91e63;
+        --mono: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, Consolas, monospace;
+      }
+
       * {
         box-sizing: border-box;
         margin: 0;
@@ -16,8 +29,7 @@
       html {
         background: #1a1a2e;
         color: #e0e0e0;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-          Helvetica, Arial, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         font-size: 15px;
         line-height: 1.5;
       }
@@ -50,7 +62,7 @@
       /* Cards */
       .card {
         background: #16213e;
-        border: 1px solid #2a2a4a;
+        border: 1px solid var(--border);
         border-radius: 12px;
         padding: 24px;
         margin-bottom: 20px;
@@ -61,7 +73,7 @@
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: #b0b0cc;
+        color: var(--label);
         margin-bottom: 16px;
       }
 
@@ -74,7 +86,7 @@
       /* Segmented control */
       .segmented-control {
         display: inline-flex;
-        background: #0f1629;
+        background: var(--bg-inset);
         border-radius: 8px;
         padding: 3px;
         gap: 2px;
@@ -96,7 +108,7 @@
       }
 
       .segmented-control input[type='radio']:checked + label {
-        background: #5084ee;
+        background: var(--accent);
         color: #fff;
       }
 
@@ -118,23 +130,16 @@
         display: block;
       }
 
-      .list-section .description {
-        font-size: 0.85rem;
-        color: #b0b0b0;
-        margin-bottom: 10px;
-      }
-
       /* Textarea */
       textarea {
         width: 100%;
         min-height: 160px;
-        background: #0f1629;
+        background: var(--bg-inset);
         color: #e0e0e0;
-        border: 1px solid #2a2a4a;
+        border: 1px solid var(--border);
         border-radius: 8px;
         padding: 12px;
-        font-family: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, Consolas,
-          monospace;
+        font-family: var(--mono);
         font-size: 0.85rem;
         line-height: 1.6;
         resize: vertical;
@@ -143,7 +148,7 @@
 
       textarea:focus {
         outline: none;
-        border-color: #5084ee;
+        border-color: var(--accent);
       }
 
       textarea::placeholder {
@@ -165,16 +170,16 @@
       }
 
       .btn-primary {
-        background: #5084ee;
+        background: var(--accent);
         color: #fff;
       }
 
       .btn-primary:hover {
-        background: #6094ff;
+        background: var(--accent-hover);
       }
 
       .btn-secondary {
-        background: #2a2a4a;
+        background: var(--border);
         color: #ccc;
       }
 
@@ -192,7 +197,7 @@
       /* Toast */
       .toast {
         font-size: 0.85rem;
-        color: #4caf50;
+        color: var(--green);
         opacity: 0;
         transition: opacity 0.3s ease;
       }
@@ -209,9 +214,9 @@
 
       .tester-row input[type='text'] {
         flex: 1;
-        background: #0f1629;
+        background: var(--bg-inset);
         color: #e0e0e0;
-        border: 1px solid #2a2a4a;
+        border: 1px solid var(--border);
         border-radius: 8px;
         padding: 10px 12px;
         font-size: 0.9rem;
@@ -220,7 +225,7 @@
 
       .tester-row input[type='text']:focus {
         outline: none;
-        border-color: #5084ee;
+        border-color: var(--accent);
       }
 
       .tester-row input[type='text']::placeholder {
@@ -240,29 +245,229 @@
         display: block;
       }
 
-      .test-result.match {
-        background: rgba(233, 30, 99, 0.1);
-        border: 1px solid rgba(233, 30, 99, 0.3);
-        color: #e91e63;
-      }
-
-      .test-result.no-match {
-        background: rgba(76, 175, 80, 0.1);
-        border: 1px solid rgba(76, 175, 80, 0.3);
-        color: #4caf50;
-      }
-
       /* Blocklist match = blocked (bad for inline), allowlist no-match = not allowed (bad) */
       .test-result.blocked {
         background: rgba(233, 30, 99, 0.1);
         border: 1px solid rgba(233, 30, 99, 0.3);
-        color: #e91e63;
+        color: var(--pink);
       }
 
       .test-result.active-on {
         background: rgba(76, 175, 80, 0.1);
         border: 1px solid rgba(76, 175, 80, 0.3);
-        color: #4caf50;
+        color: var(--green);
+      }
+
+      /* Utility */
+      .hidden {
+        display: none !important;
+      }
+
+      /* Collapsible sections */
+      .collapsible-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .collapsible-toggle h2 {
+        margin-bottom: 0;
+      }
+
+      .chevron {
+        font-size: 0.75rem;
+        color: var(--label);
+        transition: transform 0.2s ease;
+      }
+
+      .chevron.open {
+        transform: rotate(90deg);
+      }
+
+      .collapsible {
+        display: none;
+        margin-top: 16px;
+      }
+
+      .collapsible.open {
+        display: block;
+      }
+
+      .warning-box {
+        background: rgba(255, 152, 0, 0.1);
+        border: 1px solid rgba(255, 152, 0, 0.3);
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 16px;
+        font-size: 0.85rem;
+        color: var(--warn);
+        line-height: 1.5;
+      }
+
+      .card h3 {
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--label);
+        margin-bottom: 8px;
+        margin-top: 20px;
+      }
+
+      .card h3:first-of-type {
+        margin-top: 0;
+      }
+
+      textarea.advanced-textarea {
+        min-height: 80px;
+      }
+
+      .example-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 8px;
+      }
+
+      .example-chips-label {
+        font-size: 0.78rem;
+        color: #777;
+        align-self: center;
+        margin-right: 2px;
+      }
+
+      .example-chip {
+        display: inline-block;
+        background: var(--bg-inset);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 4px 10px;
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        color: var(--link);
+        cursor: pointer;
+        transition: all 0.15s ease;
+        user-select: none;
+      }
+
+      .example-chip:hover {
+        background: #1a2744;
+        border-color: var(--accent);
+        color: #a8ccff;
+      }
+
+      .example-chip.added {
+        border-color: var(--green);
+        color: var(--green);
+      }
+
+      /* MIME reference */
+      .collapsible-toggle.mime {
+        display: inline-flex;
+        font-size: 0.82rem;
+        color: var(--link);
+        margin-top: 16px;
+        padding: 4px 0;
+        gap: 6px;
+      }
+
+      .collapsible-toggle.mime:hover {
+        color: #a8ccff;
+      }
+
+      .collapsible-toggle.mime .chevron {
+        font-size: 0.65rem;
+      }
+
+      .collapsible.mime {
+        margin-top: 8px;
+        background: var(--bg-inset);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 12px;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .mime-category {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--label);
+        margin-top: 10px;
+        margin-bottom: 4px;
+      }
+
+      .mime-category:first-child {
+        margin-top: 0;
+      }
+
+      .mime-entry {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.78rem;
+        font-family: var(--mono);
+        padding: 2px 0;
+        color: #b0b0b0;
+      }
+
+      .mime-entry .ext {
+        color: var(--link);
+      }
+
+      .mime-entry .type {
+        color: #888;
+      }
+
+      .example-box {
+        border-left: 3px solid var(--border);
+        padding: 6px 0 6px 12px;
+        margin-bottom: 12px;
+        font-size: 0.78rem;
+        font-family: var(--mono);
+        line-height: 1.7;
+        color: #888;
+      }
+
+      .example-box .example-label {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        font-size: 0.75rem;
+        color: #fff;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 4px;
+      }
+
+      .example-box .example-url {
+        color: #b0b0b0;
+        word-break: break-all;
+      }
+
+      .example-box .example-result {
+        color: var(--green);
+      }
+
+      .example-box .example-warn {
+        color: var(--warn);
+      }
+
+      .rule-test-match {
+        font-size: 0.82rem;
+        font-family: var(--mono);
+        padding: 2px 0;
+        color: #b0b0b0;
+      }
+
+      .rule-test-match .rule-source {
+        color: var(--link);
+      }
+
+      .rule-test-match .rule-mime {
+        color: var(--green);
       }
     </style>
   </head>
@@ -283,16 +488,12 @@
       </div>
 
       <div id="blocklist-section" class="list-section active">
-        <p class="description">
-          Undisposition is active on all domains <strong>except</strong> these. One domain per line.
-        </p>
+        <p>Undisposition is active on all domains <strong>except</strong> these. One domain per line.</p>
         <textarea id="blacklist" placeholder="example.com&#10;drive.google.com" spellcheck="false"></textarea>
       </div>
 
       <div id="allowlist-section" class="list-section">
-        <p class="description">
-          Undisposition is <strong>only</strong> active on these domains. One domain per line.
-        </p>
+        <p>Undisposition is <strong>only</strong> active on these domains. One domain per line.</p>
         <textarea id="allowlist" placeholder="example.com&#10;gitlab.com" spellcheck="false"></textarea>
       </div>
 
@@ -310,6 +511,91 @@
         <button class="btn btn-secondary" id="testButton">Test</button>
       </div>
       <div class="test-result" id="testResult"></div>
+    </div>
+
+    <div class="card hidden" id="advancedCard">
+      <div class="collapsible-toggle" id="advancedToggle">
+        <span class="chevron" id="advancedChevron">&#9654;</span>
+        <h2>Advanced: Content-Type Rules</h2>
+      </div>
+
+      <div class="collapsible" id="advancedContent">
+        <div class="warning-box">
+          Chrome's Manifest V3 cannot inspect response headers, so Content-Type rewriting is URL-based. Built-in rules handle common image formats (jpg, png, svg, webp, etc.) automatically. Use the
+          sections below to add rules for other file types.
+        </div>
+
+        <h3>Extension Rules</h3>
+        <p>Rewrite Content-Type for <strong>any URL</strong> ending in a given extension. One rule per line. Use with caution — these match all sites.</p>
+        <div class="example-box">
+          <div class="example-label">Example: adding yml=text/plain</div>
+          <span class="example-url">example.com/config.yml</span> <span class="example-result">→ text/plain (displays inline)</span><br />
+          <span class="example-warn">⚠ Matches every .yml URL on every site, even HTML preview pages</span>
+        </div>
+        <textarea id="customExtRules" class="advanced-textarea" placeholder="yml=text/plain&#10;csv=text/plain" spellcheck="false"></textarea>
+        <div class="example-chips">
+          <span class="example-chips-label">Add:</span>
+          <span class="example-chip" data-target="customExtRules" data-rule="yml=text/plain">yml=text/plain</span>
+          <span class="example-chip" data-target="customExtRules" data-rule="csv=text/plain">csv=text/plain</span>
+          <span class="example-chip" data-target="customExtRules" data-rule="json=application/json">json=application/json</span>
+          <span class="example-chip" data-target="customExtRules" data-rule="pdf=application/pdf">pdf=application/pdf</span>
+          <span class="example-chip" data-target="customExtRules" data-rule="xml=application/xml">xml=application/xml</span>
+        </div>
+
+        <h3>URL Pattern Rules</h3>
+        <p>
+          Rewrite Content-Type only for URLs matching a glob pattern. Use <strong>=auto</strong> to detect the type from the file extension. Much safer than extension rules.
+        </p>
+        <div class="example-box">
+          <div class="example-label">Example: *gitlab.com*/artifacts/raw/*=auto</div>
+          <span class="example-url">gitlab.com/.../artifacts/raw/config.yml</span> → <span class="example-result">text/plain</span><br />
+          <span class="example-url">gitlab.com/.../artifacts/raw/image.png</span> → <span class="example-result">image/png</span><br />
+          <span class="example-url">gitlab.com/.../artifacts/raw/Makefile</span> → <span class="example-result">no match (no extension)</span><br />
+          <span class="example-url">example.com/files/config.yml</span> → <span class="example-result">not matched (different domain)</span>
+        </div>
+        <textarea id="customUrlPatternRules" class="advanced-textarea" placeholder="*example.com*/files/*=auto&#10;*cdn.example.com/*=text/plain" spellcheck="false"></textarea>
+
+        <div class="collapsible-toggle mime" id="mimeToggle">
+          <span class="chevron" id="mimeChevron">&#9654;</span>
+          <span>Supported MIME types for =auto</span>
+        </div>
+        <div class="collapsible mime" id="mimeContent">
+          <div class="mime-category">Images</div>
+          <div class="mime-entry"><span class="ext">.gif .jpg .jpeg .png .tiff .tif</span><span class="type">image/*</span></div>
+          <div class="mime-entry"><span class="ext">.webp .avif .apng .svg .ico .bmp</span><span class="type">image/*</span></div>
+          <div class="mime-category">Documents</div>
+          <div class="mime-entry"><span class="ext">.pdf</span><span class="type">application/pdf</span></div>
+          <div class="mime-entry"><span class="ext">.json</span><span class="type">application/json</span></div>
+          <div class="mime-entry"><span class="ext">.xml</span><span class="type">application/xml</span></div>
+          <div class="mime-category">Audio / Video</div>
+          <div class="mime-entry"><span class="ext">.mp3 .ogg .wav .flac .aac .opus .m4a</span><span class="type">audio/*</span></div>
+          <div class="mime-entry"><span class="ext">.mp4 .webm .mkv .avi .mov</span><span class="type">video/*</span></div>
+          <div class="mime-category">Web</div>
+          <div class="mime-entry"><span class="ext">.html .htm</span><span class="type">text/html</span></div>
+          <div class="mime-entry"><span class="ext">.css</span><span class="type">text/css</span></div>
+          <div class="mime-entry"><span class="ext">.js .mjs</span><span class="type">text/javascript</span></div>
+          <div class="mime-category">Text / Config / Code (all map to text/plain)</div>
+          <div class="mime-entry"><span class="ext">.txt .md .rst .log .diff .patch</span><span class="type">text/plain</span></div>
+          <div class="mime-entry"><span class="ext">.csv .tsv .yaml .yml .toml .ini .cfg .conf .env</span><span class="type">text/plain</span></div>
+          <div class="mime-entry"><span class="ext">.py .rb .pl .php .java .kt .scala .go .rs .swift</span><span class="type">text/plain</span></div>
+          <div class="mime-entry"><span class="ext">.c .h .cpp .hpp .cc .cs .r .lua .dart</span><span class="type">text/plain</span></div>
+          <div class="mime-entry"><span class="ext">.ts .tsx .jsx .sh .bash .zsh .bat .cmd .ps1</span><span class="type">text/plain</span></div>
+          <div class="mime-entry"><span class="ext">.sql .graphql .proto .lock .gradle</span><span class="type">text/plain</span></div>
+        </div>
+
+        <div class="save-row">
+          <button class="btn btn-primary" id="advancedSave">Save</button>
+          <span class="toast" id="advancedToast">Saved</span>
+        </div>
+
+        <h3>Rule Tester</h3>
+        <p>Test which rules match a URL.</p>
+        <div class="tester-row">
+          <input type="text" id="advancedTest" placeholder="https://gitlab.com/project/-/jobs/123/artifacts/raw/config.yml" spellcheck="false" />
+          <button class="btn btn-secondary" id="advancedTestButton">Test</button>
+        </div>
+        <div class="test-result" id="advancedTestResult"></div>
+      </div>
     </div>
 
     <script src="settings.js"></script>
