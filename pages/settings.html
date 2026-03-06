@@ -7,6 +7,17 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
+      :root {
+        --bg-inset: #0f1629;
+        --border: #2a2a4a;
+        --accent: #5084ee;
+        --accent-hover: #6094ff;
+        --label: #b0b0cc;
+        --green: #4caf50;
+        --pink: #e91e63;
+        --mono: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, Consolas, monospace;
+      }
+
       * {
         box-sizing: border-box;
         margin: 0;
@@ -16,8 +27,7 @@
       html {
         background: #1a1a2e;
         color: #e0e0e0;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-          Helvetica, Arial, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         font-size: 15px;
         line-height: 1.5;
       }
@@ -50,7 +60,7 @@
       /* Cards */
       .card {
         background: #16213e;
-        border: 1px solid #2a2a4a;
+        border: 1px solid var(--border);
         border-radius: 12px;
         padding: 24px;
         margin-bottom: 20px;
@@ -61,7 +71,7 @@
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: #b0b0cc;
+        color: var(--label);
         margin-bottom: 16px;
       }
 
@@ -74,7 +84,7 @@
       /* Segmented control */
       .segmented-control {
         display: inline-flex;
-        background: #0f1629;
+        background: var(--bg-inset);
         border-radius: 8px;
         padding: 3px;
         gap: 2px;
@@ -96,7 +106,7 @@
       }
 
       .segmented-control input[type='radio']:checked + label {
-        background: #5084ee;
+        background: var(--accent);
         color: #fff;
       }
 
@@ -118,23 +128,16 @@
         display: block;
       }
 
-      .list-section .description {
-        font-size: 0.85rem;
-        color: #b0b0b0;
-        margin-bottom: 10px;
-      }
-
       /* Textarea */
       textarea {
         width: 100%;
         min-height: 160px;
-        background: #0f1629;
+        background: var(--bg-inset);
         color: #e0e0e0;
-        border: 1px solid #2a2a4a;
+        border: 1px solid var(--border);
         border-radius: 8px;
         padding: 12px;
-        font-family: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, Consolas,
-          monospace;
+        font-family: var(--mono);
         font-size: 0.85rem;
         line-height: 1.6;
         resize: vertical;
@@ -143,7 +146,7 @@
 
       textarea:focus {
         outline: none;
-        border-color: #5084ee;
+        border-color: var(--accent);
       }
 
       textarea::placeholder {
@@ -165,16 +168,16 @@
       }
 
       .btn-primary {
-        background: #5084ee;
+        background: var(--accent);
         color: #fff;
       }
 
       .btn-primary:hover {
-        background: #6094ff;
+        background: var(--accent-hover);
       }
 
       .btn-secondary {
-        background: #2a2a4a;
+        background: var(--border);
         color: #ccc;
       }
 
@@ -192,7 +195,7 @@
       /* Toast */
       .toast {
         font-size: 0.85rem;
-        color: #4caf50;
+        color: var(--green);
         opacity: 0;
         transition: opacity 0.3s ease;
       }
@@ -209,9 +212,9 @@
 
       .tester-row input[type='text'] {
         flex: 1;
-        background: #0f1629;
+        background: var(--bg-inset);
         color: #e0e0e0;
-        border: 1px solid #2a2a4a;
+        border: 1px solid var(--border);
         border-radius: 8px;
         padding: 10px 12px;
         font-size: 0.9rem;
@@ -220,7 +223,7 @@
 
       .tester-row input[type='text']:focus {
         outline: none;
-        border-color: #5084ee;
+        border-color: var(--accent);
       }
 
       .tester-row input[type='text']::placeholder {
@@ -240,29 +243,17 @@
         display: block;
       }
 
-      .test-result.match {
-        background: rgba(233, 30, 99, 0.1);
-        border: 1px solid rgba(233, 30, 99, 0.3);
-        color: #e91e63;
-      }
-
-      .test-result.no-match {
-        background: rgba(76, 175, 80, 0.1);
-        border: 1px solid rgba(76, 175, 80, 0.3);
-        color: #4caf50;
-      }
-
       /* Blocklist match = blocked (bad for inline), allowlist no-match = not allowed (bad) */
       .test-result.blocked {
         background: rgba(233, 30, 99, 0.1);
         border: 1px solid rgba(233, 30, 99, 0.3);
-        color: #e91e63;
+        color: var(--pink);
       }
 
       .test-result.active-on {
         background: rgba(76, 175, 80, 0.1);
         border: 1px solid rgba(76, 175, 80, 0.3);
-        color: #4caf50;
+        color: var(--green);
       }
     </style>
   </head>
@@ -283,16 +274,12 @@
       </div>
 
       <div id="blocklist-section" class="list-section active">
-        <p class="description">
-          Undisposition is active on all domains <strong>except</strong> these. One domain per line.
-        </p>
+        <p>Undisposition is active on all domains <strong>except</strong> these. One domain per line.</p>
         <textarea id="blacklist" placeholder="example.com&#10;drive.google.com" spellcheck="false"></textarea>
       </div>
 
       <div id="allowlist-section" class="list-section">
-        <p class="description">
-          Undisposition is <strong>only</strong> active on these domains. One domain per line.
-        </p>
+        <p>Undisposition is <strong>only</strong> active on these domains. One domain per line.</p>
         <textarea id="allowlist" placeholder="example.com&#10;gitlab.com" spellcheck="false"></textarea>
       </div>
 

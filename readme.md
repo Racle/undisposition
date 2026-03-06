@@ -33,22 +33,25 @@ This is quite irritating. This extension relaxes this behavior.
 
 ## Changelog
 
+### Version 0.0.8
+
+- **Chrome:** Added advanced settings for file type handling — define custom rules by file extension or URL pattern with automatic type detection ([#8](https://github.com/Racle/undisposition/issues/8))
+- **Chrome:** Built-in file type rules trimmed to images only; other types (PDF, JSON, YAML, etc.) available as user-configurable rules
+- **Chrome:** GitLab artifact viewing works out of the box with default URL pattern rule
+
 ### Version 0.0.7
 
-New permission required:
-The "tabs" permission is used to access tab URLs in order to display per-tab badge indicators showing whether the extension is active or disabled on the current domain.
-
-- Added allowlist mode as alternative to blocklist (Fixes #10, #2)
-- Added per-tab badge indicator: blue (active), gray (skipped), pink (disabled) (Fixes #5)
-- Smart Content-Disposition handling: preserves header for binary types like zip, rar, exe (Fixes #6)
-- Added modern image format support: webp, avif, apng, svg (Fixes #9)
-- Rewrite text/csv Content-Type to text/plain for inline display (Fixes #11)
-- Default blacklist seeded with googleusercontent.com on first install (Fixes #7)
+- Added allowlist mode as alternative to blocklist ([#10](https://github.com/Racle/undisposition/issues/10), [#2](https://github.com/Racle/undisposition/issues/2))
+- Added per-tab badge indicator: blue (active), gray (skipped), pink (disabled) ([#5](https://github.com/Racle/undisposition/issues/5))
+- Smart Content-Disposition handling: preserves download prompt for archives like zip, rar, exe ([#6](https://github.com/Racle/undisposition/issues/6))
+- Added modern image format support: webp, avif, apng, svg ([#9](https://github.com/Racle/undisposition/issues/9))
+- CSV files now display inline instead of downloading ([#11](https://github.com/Racle/undisposition/issues/11))
+- Default blocklist includes googleusercontent.com on first install ([#7](https://github.com/Racle/undisposition/issues/7))
 - Modernized settings page with card layout, segmented control, and save toast
 - Improved URL parsing for file extension detection
 - Added Makefile with zip, test, and clean targets
 - Added local test server for development
-- Ported all improvements to Chrome MV3 branch with declarativeNetRequest URL-based Content-Type rewriting
+- Ported all improvements to Chrome MV3 branch
 
 ### Version 0.0.6
 
