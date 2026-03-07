@@ -5,14 +5,15 @@ chrome.webRequest.onHeadersReceived.addListener(
     // console.log('filetype', details.url.substring(details.url.length - 3))
 
     // check if host is allowed/blocked based on list mode
-    const host = details.url.split('/')[2]
+    const host = extractHostname(details.url)
+    if (!host) return
     const listMode = (await localGetSync('listMode')) || 'blocklist'
     var skipped = false
 
     if (listMode === 'blocklist') {
       let blacklist = (await localGetSync('blacklist')) || []
       blacklist.forEach(e => {
-        if (host.includes(e)) {
+        if (domainMatches(host, e)) {
           skipped = true
         }
       })
@@ -21,7 +22,7 @@ chrome.webRequest.onHeadersReceived.addListener(
       let allowlist = (await localGetSync('allowlist')) || []
       var allowed = false
       allowlist.forEach(e => {
-        if (host.includes(e)) {
+        if (domainMatches(host, e)) {
           allowed = true
         }
       })
@@ -183,7 +184,8 @@ async function updateTabBadge(tabId, url) {
 
   var host
   try {
-    host = new URL(url).hostname
+    host = extractHostname(url)
+    if (!host) throw new Error('invalid hostname')
   } catch (e) {
     chrome.browserAction.setTitle({ tabId: tabId, title: 'Undisposition' })
     chrome.browserAction.setBadgeText({ tabId: tabId, text: '' })
@@ -196,7 +198,7 @@ async function updateTabBadge(tabId, url) {
   if (listMode === 'blocklist') {
     var blacklist = (await localGetSync('blacklist')) || []
     blacklist.forEach(function (e) {
-      if (host.includes(e)) {
+      if (domainMatches(host, e)) {
         skipped = true
       }
     })
@@ -204,7 +206,7 @@ async function updateTabBadge(tabId, url) {
     var allowlist = (await localGetSync('allowlist')) || []
     var allowed = false
     allowlist.forEach(function (e) {
-      if (host.includes(e)) {
+      if (domainMatches(host, e)) {
         allowed = true
       }
     })
@@ -279,6 +281,41 @@ async function localGetSync(key) {
       reject(ex)
     }
   })
+}
+
+function normalizeHost(host) {
+  if (!host) return ''
+  var cleaned = String(host).trim().toLowerCase()
+  if (!cleaned) return ''
+  if (cleaned.endsWith('.')) cleaned = cleaned.slice(0, -1)
+  if (cleaned.startsWith('[') && cleaned.endsWith(']')) {
+    cleaned = cleaned.slice(1, -1)
+  }
+  if (cleaned.includes(':') && !cleaned.includes(']')) {
+    var maybeHost = cleaned.split(':')[0]
+    // Preserve plain IPv6 without brackets (contains multiple colons)
+    if ((cleaned.match(/:/g) || []).length <= 1) {
+      cleaned = maybeHost
+    }
+  }
+  return cleaned
+}
+
+function extractHostname(rawUrl) {
+  try {
+    return normalizeHost(new URL(rawUrl).hostname)
+  } catch (e) {
+    return ''
+  }
+}
+
+function domainMatches(host, rule) {
+  var normalizedHost = normalizeHost(host)
+  var normalizedRule = normalizeHost(rule)
+
+  if (!normalizedHost || !normalizedRule) return false
+  if (normalizedHost === normalizedRule) return true
+  return normalizedHost.endsWith('.' + normalizedRule)
 }
 
 browser.contextMenus.create({

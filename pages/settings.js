@@ -73,16 +73,15 @@ function _testHandler() {
   } else {
     list = document.getElementById('allowlist').value.split('\n')
   }
-  list = list.map(e => e.trim()).filter(e => e)
+  list = list.map(e => normalizeHost(e)).filter(e => e)
 
   let host = trimHost(document.getElementById('test').value)
   if (!host) return
-  host = 'http://' + host
 
   let results = []
 
   list.forEach(e => {
-    if (host?.includes(e)) {
+    if (domainMatches(host, e)) {
       results.push(e)
     }
   })
@@ -123,11 +122,49 @@ function setResultContent(el, title, description, matches) {
 }
 
 function trimHost(host) {
-  host = host.trim()
-  if (host.startsWith('http')) {
-    host = host.split('/')[2]
+  return normalizeHost(extractHostname(host))
+}
+
+function normalizeHost(host) {
+  if (!host) return ''
+  var cleaned = String(host).trim().toLowerCase()
+  if (!cleaned) return ''
+  if (cleaned.endsWith('.')) cleaned = cleaned.slice(0, -1)
+  if (cleaned.startsWith('[') && cleaned.endsWith(']')) {
+    cleaned = cleaned.slice(1, -1)
   }
-  return host
+  if (cleaned.includes(':') && !cleaned.includes(']')) {
+    var maybeHost = cleaned.split(':')[0]
+    if ((cleaned.match(/:/g) || []).length <= 1) {
+      cleaned = maybeHost
+    }
+  }
+  return cleaned
+}
+
+function extractHostname(input) {
+  if (!input) return ''
+  var raw = String(input).trim()
+  if (!raw) return ''
+
+  try {
+    return new URL(raw).hostname
+  } catch (e) {
+    try {
+      return new URL('http://' + raw).hostname
+    } catch (ex) {
+      return raw.split('/')[0]
+    }
+  }
+}
+
+function domainMatches(host, rule) {
+  var normalizedHost = normalizeHost(host)
+  var normalizedRule = normalizeHost(rule)
+
+  if (!normalizedHost || !normalizedRule) return false
+  if (normalizedHost === normalizedRule) return true
+  return normalizedHost.endsWith('.' + normalizedRule)
 }
 
 document.addEventListener('DOMContentLoaded', function () {
